@@ -14,7 +14,7 @@ public class Main{
         System.out.println();
         System.out.println("1. Login as Admin\n" +
                 "2. Login as User\n" +
-                "3. Exit");
+                "3. Register\n"+"4. Exit");
         System.out.println();
         System.out.print("Choose an option:");
         String input = scanner.next().trim();
@@ -22,7 +22,7 @@ public class Main{
             Login(1);
         }else if (Objects.equals(input, "2")){
         Login(2);
-        }else {
+        }else if(Objects.equals(input,"3")) {
             register();
         }
     }
@@ -146,44 +146,74 @@ public class Main{
 
     }
 
-    public static void Login(int type){
-        boolean found = false;
-        scanner.nextLine();
-        System.out.print("Enter Your Email: ");
-        String email=scanner.nextLine();
-        System.out.print("Enter your Password: ");
-        String pass=scanner.nextLine();
-        for (int i =0;i<data_user.length;i++){
-            if (type==1){
-                if (Objects.equals(email, Admins[i][1]) && Objects.equals(pass, Admins[i][2])){
-                    System.out.println("Login Successfully");
-                    for(int j=0 ; j < 10; j++){
-                    saved_login[j]= Admins[i][j];
-                    saved_login[8]=Integer.toString(i);
-                    found=true;
-                    Admin();
-                    }
-                }
-            }else if (type==2){
-                if(Objects.equals(email,data_user[i][1]) && Objects.equals(pass,data_user[i][3])){
-                    System.out.println("Login Successfully");
-                    for(int j=0 ; j < 10; j++){
-                        saved_login[j]= data_user[i][j];
-                        saved_login[9]=Integer.toString(i);
-                        found=true;
-                    }
-                    for (String element: saved_login){
-                        System.out.println(element);
-                    }
-                    User();
-                }
-            }
-        }
-        if (!found){
-            System.out.println("Wrong");
-        }
 
+    public static void Login(int type) {
+        scanner.nextLine();
+        while (true) {
+            boolean found = false;
+
+            System.out.print("Enter Your Email: ");
+            String email = scanner.nextLine().trim();
+
+            System.out.print("Enter your Password: ");
+            String pass = scanner.nextLine();
+
+            if (type == 1) {
+                for (int i = 0; i < Admins.length; i++) {
+                    if (Objects.equals(email, Admins[i][1])
+                            && Objects.equals(pass, Admins[i][2])) {
+
+                        System.out.println("Login Successfully");
+
+                        for (int j = 0; j < 10; j++) {
+                            saved_login[j] = Admins[i][j];
+                        }
+
+                        saved_login[8] = Integer.toString(i);
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    Admin();
+                    return;
+                }
+
+            } else if (type == 2) {
+                for (int i = 0; i < data_user.length; i++) {
+                    if (data_user[i][0] != null
+                            && Objects.equals(email, data_user[i][1])
+                            && Objects.equals(pass, data_user[i][3])) {
+
+                        System.out.println("Login Successfully");
+
+                        for (int j = 0; j < 9; j++) {
+                            saved_login[j] = data_user[i][j];
+                        }
+
+                        saved_login[9] = Integer.toString(i);
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    User();
+                    return;
+                }
+
+            } else {
+                System.out.println("Invalid login type!");
+                return;
+            }
+
+            System.out.println("Wrong email or password! Try again.\n");
+        }
     }
+
 
     public static void Admin()
     {
@@ -489,48 +519,241 @@ public class Main{
         System.out.println(saved_login[4]);
     }
 
-    public static void transferMoney(){
-        boolean found = false;
+
+    public static void transferMoney() {
         scanner.nextLine();
+        int senderIndex = Integer.parseInt(saved_login[9]);
         System.out.print("Enter the Email or Phone number for transfer: ");
-        String Email_phone= scanner.nextLine();
-        for (int i=0;i<data_user.length;i++){
-            if(!Objects.equals((data_user[i][1]),saved_login[1]) || !Objects.equals((data_user[i][2]),saved_login[2])){
-            if(Objects.equals(data_user[i][1], Email_phone) || Objects.equals(data_user[i][2], Email_phone)) {
-                if (Objects.equals((data_user[i][6]), "Blocked")) {
-                    System.out.println("The user is blocked by Admin , You can't transfer money for him");
-                } else {
-                    System.out.println("User is found");
-                    System.out.println("Enter amount: ");
-                    int amount = scanner.nextInt();
-                    int Recipient = Integer.parseInt(data_user[i][6]);
-                    int availableـamount = Integer.parseInt(saved_login[4]);
-                    if (availableـamount < amount) {
-                        System.out.println("Your balance is less than the amount that you want to send , Your available amount : " + availableـamount);
-                    } else if (availableـamount == 0) {
-                        System.out.println("Your amount is ZERO , You can't transfer money, Recharge your account ");
-                    } else {
-                        availableـamount = availableـamount - amount;
-                        Recipient = Recipient + amount;
-                        data_user[i][6] = Integer.toString(Recipient);
-                        data_user[Integer.parseInt(saved_login[8])][4] = Integer.toString(availableـamount);
-                        System.out.println("Sent successfully");
-                        System.out.println("");
-                        found=true;
-                    }
-                }
+        String emailPhone = scanner.nextLine().trim();
+        int receiverIndex = -1;
+        for (int i = 0; i < data_user.length; i++) {
+            if (data_user[i][0] == null) {
+                continue;
             }
-            }else {
-                System.out.println("You Can't sent to yourself");
+
+            boolean emailMatch = data_user[i][1] != null
+                    && data_user[i][1].equalsIgnoreCase(emailPhone);
+
+            boolean phoneMatch = data_user[i][2] != null
+                    && data_user[i][2].equals(emailPhone);
+
+            if (emailMatch || phoneMatch) {
+                receiverIndex = i;
                 break;
             }
-            if(!found){
-                System.out.println("User is not found");
+        }
+
+        if (receiverIndex == -1) {
+            System.out.println("User is not found!");
+            return;
+        }
+
+        if (senderIndex == receiverIndex) {
+            System.out.println("You can't send money to yourself!");
+            return;
+        }
+
+        if ("Blocked".equalsIgnoreCase(data_user[receiverIndex][7])) {
+            System.out.println("The user is blocked by Admin!");
+            return;
+        }
+
+        System.out.print("Enter amount: ");
+
+        if (!scanner.hasNextInt()) {
+            System.out.println("Invalid amount!");
+            scanner.nextLine();
+            return;
+        }
+
+        int amount = scanner.nextInt();
+
+        int senderBefore = Integer.parseInt(data_user[senderIndex][4]);
+        int receiverBefore = Integer.parseInt(data_user[receiverIndex][4]);
+
+        int transactionIndex = -1;
+
+        for (int i = 0; i < Transaction[senderIndex].length; i++) {
+            if (Transaction[senderIndex][i][0] == null) {
+                transactionIndex = i;
+                break;
             }
         }
+
+        int receiverTransactionIndex = -1;
+
+        for (int i = 0; i < Transaction[receiverIndex].length; i++) {
+            if (Transaction[receiverIndex][i][0] == null) {
+                receiverTransactionIndex = i;
+                break;
+            }
+        }
+
+        if (amount <= 0 || senderBefore < amount) {
+
+            String errorType;
+
+            if (amount <= 0) {
+                errorType = "Invalid Amount";
+                System.out.println("Amount must be greater than zero!");
+            } else {
+                errorType = "Insufficient Balance";
+                System.out.println(
+                        "Insufficient balance! Your balance: " + senderBefore
+                );
+            }
+
+            int failedTransactions =
+                    Integer.parseInt(data_user[senderIndex][6]);
+
+            data_user[senderIndex][6] =
+                    Integer.toString(failedTransactions + 1);
+
+            if (transactionIndex != -1) {
+                Transaction[senderIndex][transactionIndex][0] =
+                        data_user[senderIndex][8];
+                Transaction[senderIndex][transactionIndex][1] =
+                        data_user[receiverIndex][8];
+                Transaction[senderIndex][transactionIndex][2] =
+                        Integer.toString(amount);
+                Transaction[senderIndex][transactionIndex][3] =
+                        Integer.toString(senderBefore);
+                Transaction[senderIndex][transactionIndex][4] =
+                        Integer.toString(senderBefore);
+                Transaction[senderIndex][transactionIndex][5] =
+                        Integer.toString(receiverBefore);
+                Transaction[senderIndex][transactionIndex][6] =
+                        Integer.toString(receiverBefore);
+                Transaction[senderIndex][transactionIndex][7] = errorType;
+            }
+
+            if (receiverTransactionIndex != -1) {
+                Transaction[receiverIndex][receiverTransactionIndex][0] =
+                        data_user[receiverIndex][8];
+                Transaction[receiverIndex][receiverTransactionIndex][1] =
+                        data_user[senderIndex][8];
+                Transaction[receiverIndex][receiverTransactionIndex][2] =
+                        Integer.toString(amount);
+                Transaction[receiverIndex][receiverTransactionIndex][3] =
+                        Integer.toString(receiverBefore);
+                Transaction[receiverIndex][receiverTransactionIndex][4] =
+                        Integer.toString(receiverBefore);
+                Transaction[receiverIndex][receiverTransactionIndex][5] =
+                        Integer.toString(senderBefore);
+                Transaction[receiverIndex][receiverTransactionIndex][6] =
+                        Integer.toString(senderBefore);
+                Transaction[receiverIndex][receiverTransactionIndex][7] =
+                        errorType;
+            }
+
+            System.out.println("Failed transaction recorded!");
+            return;
+        }
+
+        if (transactionIndex == -1 || receiverTransactionIndex == -1) {
+            System.out.println("Transaction history is full!");
+            return;
+        }
+
+        int senderAfter = senderBefore - amount;
+        int receiverAfter = receiverBefore + amount;
+
+        Transaction[senderIndex][transactionIndex][0] =
+                data_user[senderIndex][8];
+        Transaction[senderIndex][transactionIndex][1] =
+                data_user[receiverIndex][8];
+        Transaction[senderIndex][transactionIndex][2] =
+                Integer.toString(amount);
+        Transaction[senderIndex][transactionIndex][3] =
+                Integer.toString(senderBefore);
+        Transaction[senderIndex][transactionIndex][4] =
+                Integer.toString(senderAfter);
+        Transaction[senderIndex][transactionIndex][5] =
+                Integer.toString(receiverBefore);
+        Transaction[senderIndex][transactionIndex][6] =
+                Integer.toString(receiverAfter);
+        Transaction[senderIndex][transactionIndex][7] = "Success";
+
+        Transaction[receiverIndex][receiverTransactionIndex][0] =
+                data_user[receiverIndex][8];
+        Transaction[receiverIndex][receiverTransactionIndex][1] =
+                data_user[senderIndex][8];
+        Transaction[receiverIndex][receiverTransactionIndex][2] =
+                Integer.toString(amount);
+        Transaction[receiverIndex][receiverTransactionIndex][3] =
+                Integer.toString(receiverBefore);
+        Transaction[receiverIndex][receiverTransactionIndex][4] =
+                Integer.toString(receiverAfter);
+        Transaction[receiverIndex][receiverTransactionIndex][5] =
+                Integer.toString(senderBefore);
+        Transaction[receiverIndex][receiverTransactionIndex][6] =
+                Integer.toString(senderAfter);
+        Transaction[receiverIndex][receiverTransactionIndex][7] = "Success";
+
+        data_user[senderIndex][4] = Integer.toString(senderAfter);
+        data_user[receiverIndex][4] = Integer.toString(receiverAfter);
+
+        int senderSuccessful =
+                Integer.parseInt(data_user[senderIndex][5]);
+
+        int receiverSuccessful =
+                Integer.parseInt(data_user[receiverIndex][5]);
+
+        data_user[senderIndex][5] =
+                Integer.toString(senderSuccessful + 1);
+
+        data_user[receiverIndex][5] =
+                Integer.toString(receiverSuccessful + 1);
+
+        System.out.println("Sent successfully!");
+        System.out.println("Your balance before: " + senderBefore);
+        System.out.println("Your balance after: " + senderAfter);
     }
     public static void showTransactionHistoryForUser() {
 
+        int userIndex = Integer.parseInt(saved_login[9]);
+        boolean found = false;
+
+        System.out.println("\n========== Transaction History ==========");
+
+        for (int i = 0; i < Transaction[userIndex].length; i++) {
+
+            if (Transaction[userIndex][i][0] == null) {
+                continue;
+            }
+
+            found = true;
+
+            String sender = Transaction[userIndex][i][0];
+            String receiver = Transaction[userIndex][i][1];
+            String amount = Transaction[userIndex][i][2];
+
+            String senderBefore = Transaction[userIndex][i][3];
+            String senderAfter = Transaction[userIndex][i][4];
+            String receiverBefore = Transaction[userIndex][i][5];
+            String receiverAfter = Transaction[userIndex][i][6];
+
+            System.out.println("\nTransaction #" + (i + 1));
+            System.out.println("Sender ID: " + sender);
+            System.out.println("Receiver ID: " + receiver);
+            System.out.println("Amount: " + amount);
+            System.out.println("Sender Balance Before: " + senderBefore);
+            System.out.println("Sender Balance After: " + senderAfter);
+            System.out.println("Receiver Balance Before: " + receiverBefore);
+            System.out.println("Receiver Balance After: " + receiverAfter);
+
+            if (sender.equals(data_user[userIndex][8])) {
+                System.out.println("Type: Sent");
+            } else {
+                System.out.println("Type: Received");
+            }
+
+            System.out.println("-----------------------------------------");
+        }
+
+        if (!found) {
+            System.out.println("You have no transactions yet.");
+        }
     }
     public static void searchRecipient(){
         scanner.nextLine();
@@ -669,7 +892,6 @@ public class Main{
             return;
         }
 
-        // Update name
         if (choose == 1) {
             data_user[userIndex][0] = value;
             saved_login[0] = value;
@@ -677,7 +899,6 @@ public class Main{
             System.out.println("Name updated successfully!");
         }
 
-        // Update email
         else if (choose == 2) {
             if (!value.contains("@") ||
                     value.indexOf("@") == 0 ||
@@ -702,7 +923,6 @@ public class Main{
             System.out.println("Email updated successfully!");
         }
 
-        // Update phone number
         else if (choose == 3) {
             if (!value.matches("01[012][0-9]{8}")) {
                 System.out.println("Invalid phone number!");
