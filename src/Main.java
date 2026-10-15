@@ -152,7 +152,9 @@ public class Main{
     public static void Login(int type) {
         scanner.nextLine();
 
-        while (true) {
+        int attempts = 0;
+
+        while (attempts < 3) {
             boolean found = false;
 
             System.out.print("Enter Your Email (0 to return): ");
@@ -218,7 +220,16 @@ public class Main{
                 return;
             }
 
-            System.out.println("Wrong email or password! Try again.\n");
+            attempts++;
+
+            if (attempts < 3) {
+                System.out.println("Wrong email or password! Try again.");
+                System.out.println("Attempts remaining: " + (3 - attempts) + "\n");
+            } else {
+                System.out.println("Too many failed attempts!");
+                System.out.println("Closing the program...");
+                System.exit(0);
+            }
         }
     }
     public static void Admin()
@@ -341,10 +352,12 @@ public class Main{
                        && Transaction[i][j][6].equals("Success")) {
 
                    amount += Integer.parseInt(Transaction[i][j][2]);
-                   amount=amount/2;
                }
            }
        }
+       amount=amount/2;
+       suc_trans=suc_trans/2;
+       failed_trans=failed_trans/2;
        System.out.println("Total number of registered users: " + num_users);
        System.out.println("Number of active users: " + num_activ);
        System.out.println("Number of blocked accounts: " + num_blocks);
@@ -645,7 +658,7 @@ public class Main{
         }
         System.out.print("Enter amount: ");
 
-        if (!scanner.hasNextInt()) { // scanner.hasNextint == false
+        if (!scanner.hasNextInt()) { 
             System.out.println("Invalid amount!");
             scanner.nextLine();
             return;
