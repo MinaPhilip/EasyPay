@@ -279,6 +279,7 @@ public class Main{
             {
                 showTransactionHistory();
                 Admin();
+                break;
             }
             case 6:
                 block_unblock("1");
@@ -298,6 +299,7 @@ public class Main{
             default:
                 System.out.println("Invalid number");
                 Admin();
+                break;
         }
     }
    public static void Showstatistics(){
@@ -317,10 +319,13 @@ public class Main{
                if (data_user[i][5] != null) {
                    suc_trans = suc_trans + Integer.parseInt(data_user[i][5]);
                }
+               if (data_user[i][6] != null){
+                   failed_trans=failed_trans+Integer.parseInt(data_user[i][6]);
+               }
            }
 
            if (data_user[i][7] != null &&
-                   data_user[i][7].equalsIgnoreCase("Activ")) {
+                   data_user[i][7].equalsIgnoreCase("Active")) {
 
                num_activ++;
 
@@ -332,10 +337,11 @@ public class Main{
            for (int j = 0; j < Transaction[i].length; j++) {
 
                if (Transaction[i][j][0] != null
-                       && Transaction[i][j][7] != null
-                       && Transaction[i][j][7].equals("Success")) {
+                       && Transaction[i][j][6] != null
+                       && Transaction[i][j][6].equals("Success")) {
 
                    amount += Integer.parseInt(Transaction[i][j][2]);
+                   amount=amount/2;
                }
            }
        }
@@ -356,7 +362,7 @@ public class Main{
                             (data_user[i][1] != null && data_user[i][1].equalsIgnoreCase(input)) ||
                             (data_user[i][2] != null && data_user[i][2].equalsIgnoreCase(input)) ||
                             (data_user[i][3] != null && data_user[i][8].equalsIgnoreCase(input)))) {
-
+                System.out.println("====================================================================================");
                 System.out.println("Full name: " + data_user[i][0]);
                 System.out.println("Phone number: " + data_user[i][2]);
                 System.out.println("User ID: " + data_user[i][8]);
@@ -365,9 +371,11 @@ public class Main{
                 System.out.println("Successful Operations: "+data_user[i][6]);
                 System.out.println("Failed operations: "+data_user[i][5]);
                 System.out.println("Status: "+data_user[i][7]);
+                System.out.println("====================================================================================");
                 found = true;
                 return data_user[i];
             } else if (input.equalsIgnoreCase("" )&& data_user[i][0]!=null) {
+                System.out.println("====================================================================================");
                 System.out.println("Full name: " + data_user[i][0]);
                 System.out.println("Phone number: " + data_user[i][2]);
                 System.out.println("User ID: " + data_user[i][8]);
@@ -376,6 +384,7 @@ public class Main{
                 System.out.println("Successful Operations: "+data_user[i][6]);
                 System.out.println("Failed operations: "+data_user[i][5]);
                 System.out.println("Status: "+data_user[i][7]);
+                System.out.println("====================================================================================");
                 found=true;
             }
         }
@@ -449,10 +458,14 @@ public class Main{
 
             for (int j = 0; j < Transaction.length;j++){
                 if (Transaction[i][j][0]!=null) {
+                    System.out.println("====================================================================================");
                     System.out.println("Sender ID:" + Transaction[i][j][0]);
                     System.out.println("Receiver ID"+Transaction[i][j][1]);
                     System.out.println("Amount: "+Transaction[i][j][2]);
                     System.out.println("After sending: "+Transaction[i][j][4]);
+                    System.out.println("Status: "+ Transaction[i][j][5]);
+                    System.out.println("Type: "+Transaction[i][j][6]);
+                    System.out.println("====================================================================================");
                 }
             }
         }
@@ -527,7 +540,7 @@ public class Main{
         while (true) {
             if (scanner.hasNextInt()) {
                 choose = scanner.nextInt();
-                if (choose>8){
+                if (choose>8 || choose <= 0 ){
                     System.out.println("Please enter a number!");
                     continue;
                 }
@@ -565,6 +578,7 @@ public class Main{
             {
                 searchRecipient();
                 User();
+                break;
             }
             case 6:
                 viewProfile();
@@ -579,7 +593,7 @@ public class Main{
                 break;
             default:
                 System.out.println("Invalid number");
-                Admin();
+                User();
         }
     }
     public static void showBalance(){
@@ -678,7 +692,6 @@ public class Main{
 
             data_user[senderIndex][6] =
                     Integer.toString(failedTransactions + 1);
-
             if (transactionIndex != -1) {
                 Transaction[senderIndex][transactionIndex][0] =
                         data_user[senderIndex][8];
@@ -690,30 +703,23 @@ public class Main{
                         Integer.toString(senderBefore);
                 Transaction[senderIndex][transactionIndex][4] =
                         Integer.toString(senderBefore);
-                Transaction[senderIndex][transactionIndex][5] =
-                        Integer.toString(receiverBefore);
-                Transaction[senderIndex][transactionIndex][6] =
-                        Integer.toString(receiverBefore);
-                Transaction[senderIndex][transactionIndex][7] = errorType;
+                Transaction[senderIndex][transactionIndex][5] = "Sent";
+                Transaction[senderIndex][transactionIndex][6] = "Failed";
             }
 
             if (receiverTransactionIndex != -1) {
                 Transaction[receiverIndex][receiverTransactionIndex][0] =
-                        data_user[receiverIndex][8];
-                Transaction[receiverIndex][receiverTransactionIndex][1] =
                         data_user[senderIndex][8];
+                Transaction[receiverIndex][receiverTransactionIndex][1] =
+                        data_user[receiverIndex][8];
                 Transaction[receiverIndex][receiverTransactionIndex][2] =
                         Integer.toString(amount);
                 Transaction[receiverIndex][receiverTransactionIndex][3] =
                         Integer.toString(receiverBefore);
                 Transaction[receiverIndex][receiverTransactionIndex][4] =
                         Integer.toString(receiverBefore);
-                Transaction[receiverIndex][receiverTransactionIndex][5] =
-                        Integer.toString(senderBefore);
-                Transaction[receiverIndex][receiverTransactionIndex][6] =
-                        Integer.toString(senderBefore);
-                Transaction[receiverIndex][receiverTransactionIndex][7] =
-                        errorType;
+                Transaction[receiverIndex][receiverTransactionIndex][5] = "Received";
+                Transaction[receiverIndex][receiverTransactionIndex][6] = "Failed";
             }
 
             System.out.println("Failed transaction recorded!");
@@ -727,32 +733,32 @@ public class Main{
 
         int senderAfter = senderBefore - amount;
         int receiverAfter = receiverBefore + amount;
+
         Transaction[senderIndex][transactionIndex][0] =
                 data_user[senderIndex][8];
-
         Transaction[senderIndex][transactionIndex][1] =
                 data_user[receiverIndex][8];
-
-        Transaction[senderIndex][transactionIndex][2] = Integer.toString(amount);
-        Transaction[senderIndex][transactionIndex][3] = Integer.toString(senderBefore);
-        Transaction[senderIndex][transactionIndex][4] = Integer.toString(senderAfter);
-        Transaction[senderIndex][transactionIndex][5] = Integer.toString(receiverBefore);
-        Transaction[senderIndex][transactionIndex][6] = Integer.toString(receiverAfter);
-        Transaction[senderIndex][transactionIndex][7] = "Success";
-
+        Transaction[senderIndex][transactionIndex][2] =
+                Integer.toString(amount);
+        Transaction[senderIndex][transactionIndex][3] =
+                Integer.toString(senderBefore);
+        Transaction[senderIndex][transactionIndex][4] =
+                Integer.toString(senderAfter);
+        Transaction[senderIndex][transactionIndex][5] = "Sent";
+        Transaction[senderIndex][transactionIndex][6] = "Success";
 
         Transaction[receiverIndex][receiverTransactionIndex][0] =
                 data_user[senderIndex][8];
-
         Transaction[receiverIndex][receiverTransactionIndex][1] =
                 data_user[receiverIndex][8];
-
-        Transaction[receiverIndex][receiverTransactionIndex][2] = Integer.toString(amount);
-        Transaction[receiverIndex][receiverTransactionIndex][3] = Integer.toString(senderBefore);
-        Transaction[receiverIndex][receiverTransactionIndex][4] = Integer.toString(senderAfter);
-        Transaction[receiverIndex][receiverTransactionIndex][5] = Integer.toString(receiverBefore);
-        Transaction[receiverIndex][receiverTransactionIndex][6] = Integer.toString(receiverAfter);
-        Transaction[receiverIndex][receiverTransactionIndex][7] = "Success";
+        Transaction[receiverIndex][receiverTransactionIndex][2] =
+                Integer.toString(amount);
+        Transaction[receiverIndex][receiverTransactionIndex][3] =
+                Integer.toString(receiverBefore);
+        Transaction[receiverIndex][receiverTransactionIndex][4] =
+                Integer.toString(receiverAfter);
+        Transaction[receiverIndex][receiverTransactionIndex][5] = "Received";
+        Transaction[receiverIndex][receiverTransactionIndex][6] = "Success";
         data_user[senderIndex][4] = Integer.toString(senderAfter);
         data_user[receiverIndex][4] = Integer.toString(receiverAfter);
 
@@ -789,26 +795,23 @@ public class Main{
             String sender = Transaction[userIndex][i][0];
             String receiver = Transaction[userIndex][i][1];
             String amount = Transaction[userIndex][i][2];
-
-            String senderBefore = Transaction[userIndex][i][3];
-            String senderAfter = Transaction[userIndex][i][4];
-            String receiverBefore = Transaction[userIndex][i][5];
-            String receiverAfter = Transaction[userIndex][i][6];
-
+            String status = Transaction[userIndex][i][6];
+            String Before = Transaction[userIndex][i][3];
+            String After = Transaction[userIndex][i][4];
+            System.out.println("====================================================================================");
             System.out.println("\nTransaction #" +(i+1));
             System.out.println("Sender ID: " + sender);
             System.out.println("Receiver ID: " + receiver);
             System.out.println("Amount: " + amount);
-            System.out.println("Sender Balance Before: " + senderBefore);
-            System.out.println("Sender Balance After: " + senderAfter);
-            System.out.println("Receiver Balance Before: " + receiverBefore);
-            System.out.println("Receiver Balance After: " + receiverAfter);
+            System.out.println("Balance Before: " +Before);
+            System.out.println("Balance After: " + After);
+            System.out.println("Status: "+status);
             if (sender.equalsIgnoreCase(data_user[userIndex][8])) {
                 System.out.println("Type: Sent");
             } else {
                 System.out.println("Type: Received");
             }
-
+            System.out.println("====================================================================================");
             System.out.println("-----------------------------------------");
         }
 
@@ -986,7 +989,7 @@ public class Main{
         }
 
         else if (choose == 3) {
-            if (!value.matches("01[012][0-9]{8}")) {
+            if (!value.matches("01[0125][0-9]{8}")) {
                 System.out.println("Invalid phone number!");
                 return;
             }
