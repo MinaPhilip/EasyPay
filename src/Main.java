@@ -151,11 +151,17 @@ public class Main{
     }
     public static void Login(int type) {
         scanner.nextLine();
+
         while (true) {
             boolean found = false;
 
-            System.out.print("Enter Your Email: ");
+            System.out.print("Enter Your Email (0 to return): ");
             String email = scanner.nextLine().trim();
+
+            if (email.equals("0")) {
+                start();
+                return;
+            }
 
             System.out.print("Enter your Password: ");
             String pass = scanner.nextLine();
@@ -166,6 +172,7 @@ public class Main{
                             && Objects.equals(pass, Admins[i][2])) {
 
                         System.out.println("Login Successfully");
+
                         if (Admins[i][0] != null) {
                             for (int j = 0; j < 3; j++) {
                                 saved_login[j] = Admins[i][j];
@@ -173,7 +180,6 @@ public class Main{
                         }
 
                         saved_login[9] = Integer.toString(i);
-
                         found = true;
                         break;
                     }
@@ -197,7 +203,6 @@ public class Main{
                         }
 
                         saved_login[9] = Integer.toString(i);
-
                         found = true;
                         break;
                     }
@@ -216,8 +221,6 @@ public class Main{
             System.out.println("Wrong email or password! Try again.\n");
         }
     }
-
-
     public static void Admin()
     {
         System.out.print("========== ADMIN PANEL ==========\n" +
@@ -316,18 +319,24 @@ public class Main{
                }
            }
 
-           if (data_user[i][4] != null &&
-                   data_user[i][4].equalsIgnoreCase("activ")) {
+           if (data_user[i][7] != null &&
+                   data_user[i][7].equalsIgnoreCase("Activ")) {
 
                num_activ++;
 
-           } else if (data_user[i][4] != null &&
-                   data_user[i][4].equalsIgnoreCase("block")) {
+           } else if (data_user[i][7] != null &&
+                   data_user[i][7].equalsIgnoreCase("Blocked")) {
 
                num_blocks++;
            }
-           if (data_user[i][6] != null) {
-               amount += Integer.parseInt(data_user[i][6]);
+           for (int j = 0; j < Transaction[i].length; j++) {
+
+               if (Transaction[i][j][0] != null
+                       && Transaction[i][j][7] != null
+                       && Transaction[i][j][7].equals("Success")) {
+
+                   amount += Integer.parseInt(Transaction[i][j][2]);
+               }
            }
        }
        System.out.println("Total number of registered users: " + num_users);
@@ -346,19 +355,27 @@ public class Main{
                     (data_user[i][0].equalsIgnoreCase(input) ||
                             (data_user[i][1] != null && data_user[i][1].equalsIgnoreCase(input)) ||
                             (data_user[i][2] != null && data_user[i][2].equalsIgnoreCase(input)) ||
-                            (data_user[i][3] != null && data_user[i][3].equalsIgnoreCase(input)))) {
+                            (data_user[i][3] != null && data_user[i][8].equalsIgnoreCase(input)))) {
 
                 System.out.println("Full name: " + data_user[i][0]);
-                System.out.println("Phone number: " + data_user[i][1]);
-                System.out.println("User ID: " + data_user[i][2]);
-                System.out.println("Email address: " + data_user[i][3]);
+                System.out.println("Phone number: " + data_user[i][2]);
+                System.out.println("User ID: " + data_user[i][8]);
+                System.out.println("Email address: " + data_user[i][1]);
+                System.out.println("The Balance is : "+data_user[i][4]);
+                System.out.println("Successful Operations: "+data_user[i][6]);
+                System.out.println("Failed operations: "+data_user[i][5]);
+                System.out.println("Status: "+data_user[i][7]);
                 found = true;
                 return data_user[i];
             } else if (input.equalsIgnoreCase("" )&& data_user[i][0]!=null) {
                 System.out.println("Full name: " + data_user[i][0]);
-                System.out.println("Phone number: " + data_user[i][1]);
-                System.out.println("User ID: " + data_user[i][2]);
-                System.out.println("Email address: " + data_user[i][3]);
+                System.out.println("Phone number: " + data_user[i][2]);
+                System.out.println("User ID: " + data_user[i][8]);
+                System.out.println("Email address: " + data_user[i][1]);
+                System.out.println("The Balance is : "+data_user[i][4]);
+                System.out.println("Successful Operations: "+data_user[i][6]);
+                System.out.println("Failed operations: "+data_user[i][5]);
+                System.out.println("Status: "+data_user[i][7]);
                 found=true;
             }
         }
@@ -370,7 +387,7 @@ public class Main{
         return null;
     }
     public static void updateUser() {
-        System.out.print("Enter a Full name or ID or Email or Phone: ");
+        System.out.print("Enter a ID or Email or Phone: ");
         scanner.nextLine();
         String name = scanner.nextLine();
 
@@ -401,14 +418,14 @@ public class Main{
             System.out.print("Enter the new email: ");
             String update_email = scanner.nextLine();
 
-            information[3] = update_email;
+            information[1] = update_email;
 
         } else if (Objects.equals(choose, "3")) {
             scanner.nextLine();
             System.out.print("Enter the new Phone: ");
             String update_phone = scanner.nextLine();
 
-            information[1] = update_phone;
+            information[2] = update_phone;
 
         } else {
             System.out.println("Invalid choice!");
@@ -424,18 +441,18 @@ public class Main{
     public static void showTransactionHistory(){
         for (int i = 0; i <Transaction.length;i++){
             if (data_user[i][0]!=null && Transaction[i][0][0]!=null){
-                System.out.println("user"+data_user[i][0]);
+                System.out.println("User: "+data_user[i][0]);
             }else if(data_user[i][0]!=null && Transaction[i][0][0]==null) {
-                System.out.println("user"+data_user[i][0]);
-                System.out.println("o trans");
+                System.out.println("User: "+data_user[i][0]);
+                System.out.println("NO TRANSACTIONS");
             }
 
             for (int j = 0; j < Transaction.length;j++){
                 if (Transaction[i][j][0]!=null) {
-                    System.out.println("id" + Transaction[i][j][0]);
-                    System.out.println(Transaction[i][j][1]);
-                    System.out.println(Transaction[i][j][2]);
-                    System.out.println(Transaction[i][j][3]);
+                    System.out.println("Sender ID:" + Transaction[i][j][0]);
+                    System.out.println("Receiver ID"+Transaction[i][j][1]);
+                    System.out.println("Amount: "+Transaction[i][j][2]);
+                    System.out.println("After sending: "+Transaction[i][j][4]);
                 }
             }
         }
@@ -452,7 +469,7 @@ public class Main{
                 return;
             }
 
-            information[4] = "Blocked";
+            information[7] = "Blocked";
 
             System.out.println("User blocked successfully!");
 
@@ -471,7 +488,7 @@ public class Main{
                 return;
             }
 
-            information[4] = "Activ";
+            information[7] = "Active";
 
             System.out.println("User unblocked successfully!");
 
@@ -491,8 +508,8 @@ public class Main{
             return;
         }
 
-        System.out.println("Account status: " + information[4]);
-        System.out.println("Balance: " + information[6]);
+        System.out.println("Account status: " + information[7]);
+        System.out.println("Balance: " + information[4]);
     }
 
     public static void User(){
@@ -608,7 +625,10 @@ public class Main{
             System.out.println("The user is blocked by Admin!");
             return;
         }
-
+        if ("Blocked".equalsIgnoreCase(saved_login[7])) {
+            System.out.println("You are blocked by Admin!");
+            return;
+        }
         System.out.print("Enter amount: ");
 
         if (!scanner.hasNextInt()) { // scanner.hasNextint == false
@@ -707,39 +727,32 @@ public class Main{
 
         int senderAfter = senderBefore - amount;
         int receiverAfter = receiverBefore + amount;
-
         Transaction[senderIndex][transactionIndex][0] =
                 data_user[senderIndex][8];
+
         Transaction[senderIndex][transactionIndex][1] =
                 data_user[receiverIndex][8];
-        Transaction[senderIndex][transactionIndex][2] =
-                Integer.toString(amount);
-        Transaction[senderIndex][transactionIndex][3] =
-                Integer.toString(senderBefore);
-        Transaction[senderIndex][transactionIndex][4] =
-                Integer.toString(senderAfter);
-        Transaction[senderIndex][transactionIndex][5] =
-                Integer.toString(receiverBefore);
-        Transaction[senderIndex][transactionIndex][6] =
-                Integer.toString(receiverAfter);
+
+        Transaction[senderIndex][transactionIndex][2] = Integer.toString(amount);
+        Transaction[senderIndex][transactionIndex][3] = Integer.toString(senderBefore);
+        Transaction[senderIndex][transactionIndex][4] = Integer.toString(senderAfter);
+        Transaction[senderIndex][transactionIndex][5] = Integer.toString(receiverBefore);
+        Transaction[senderIndex][transactionIndex][6] = Integer.toString(receiverAfter);
         Transaction[senderIndex][transactionIndex][7] = "Success";
 
-        Transaction[receiverIndex][receiverTransactionIndex][0] =
-                data_user[receiverIndex][8];
-        Transaction[receiverIndex][receiverTransactionIndex][1] =
-                data_user[senderIndex][8];
-        Transaction[receiverIndex][receiverTransactionIndex][2] =
-                Integer.toString(amount);
-        Transaction[receiverIndex][receiverTransactionIndex][3] =
-                Integer.toString(receiverBefore);
-        Transaction[receiverIndex][receiverTransactionIndex][4] =
-                Integer.toString(receiverAfter);
-        Transaction[receiverIndex][receiverTransactionIndex][5] =
-                Integer.toString(senderBefore);
-        Transaction[receiverIndex][receiverTransactionIndex][6] =
-                Integer.toString(senderAfter);
-        Transaction[receiverIndex][receiverTransactionIndex][7] = "Success";
 
+        Transaction[receiverIndex][receiverTransactionIndex][0] =
+                data_user[senderIndex][8];
+
+        Transaction[receiverIndex][receiverTransactionIndex][1] =
+                data_user[receiverIndex][8];
+
+        Transaction[receiverIndex][receiverTransactionIndex][2] = Integer.toString(amount);
+        Transaction[receiverIndex][receiverTransactionIndex][3] = Integer.toString(senderBefore);
+        Transaction[receiverIndex][receiverTransactionIndex][4] = Integer.toString(senderAfter);
+        Transaction[receiverIndex][receiverTransactionIndex][5] = Integer.toString(receiverBefore);
+        Transaction[receiverIndex][receiverTransactionIndex][6] = Integer.toString(receiverAfter);
+        Transaction[receiverIndex][receiverTransactionIndex][7] = "Success";
         data_user[senderIndex][4] = Integer.toString(senderAfter);
         data_user[receiverIndex][4] = Integer.toString(receiverAfter);
 
@@ -782,10 +795,7 @@ public class Main{
             String receiverBefore = Transaction[userIndex][i][5];
             String receiverAfter = Transaction[userIndex][i][6];
 
-            System.out.println("\nTransaction #" + (java.util.UUID.randomUUID()
-                    .toString()
-                    .substring(0, 8)
-                    .toUpperCase()));
+            System.out.println("\nTransaction #" +(i+1));
             System.out.println("Sender ID: " + sender);
             System.out.println("Receiver ID: " + receiver);
             System.out.println("Amount: " + amount);
@@ -793,8 +803,7 @@ public class Main{
             System.out.println("Sender Balance After: " + senderAfter);
             System.out.println("Receiver Balance Before: " + receiverBefore);
             System.out.println("Receiver Balance After: " + receiverAfter);
-
-            if (sender.equals(data_user[userIndex][8])) {
+            if (sender.equalsIgnoreCase(data_user[userIndex][8])) {
                 System.out.println("Type: Sent");
             } else {
                 System.out.println("Type: Received");
@@ -946,6 +955,7 @@ public class Main{
 
         if (choose == 1) {
             data_user[userIndex][0] = value;
+
             saved_login[0] = value;
 
             System.out.println("Name updated successfully!");
