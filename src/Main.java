@@ -2,11 +2,11 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Main{
-    public static String[] saved_login=new String[10];
-    public static String [][] Admins = {{"mina"},{"mina@gmail.com"},{"123"}};
-    public static String [][] data_user = new String[40][10];
-    public static String [][][] Transaction = new String[40][40][40];
-    public static String [][] Favorite=new String[40][40];
+        public static String[] saved_login=new String[10];
+        public static String [][] Admins = {{"mina","mina@gmail.com","123"}};
+        public static String [][] data_user = new String[40][10];
+        public static String [][][] Transaction = new String[40][40][40];
+        public static String [][] Favorite=new String[40][40];
     public static Scanner scanner = new Scanner(System.in);
     public static void start(){
 
@@ -28,7 +28,6 @@ public class Main{
     }
     public static String generateID() {
         String id;
-
         do {
             id = "EP" + java.util.UUID.randomUUID()
                     .toString()
@@ -95,7 +94,7 @@ public class Main{
             System.out.print("Enter Your Phone: ");
             phone = scanner.nextLine().trim();
 
-            if (!phone.matches("01[012][0-9]{8}")) {
+            if (!phone.matches("01[0125][0-9]{8}")) {
                 System.out.println("Invalid phone number! Try again.");
                 continue;
             }
@@ -146,7 +145,10 @@ public class Main{
 
     }
 
-
+    public static void Logout(){
+        saved_login = new String[10];
+        start();
+    }
     public static void Login(int type) {
         scanner.nextLine();
         while (true) {
@@ -164,12 +166,13 @@ public class Main{
                             && Objects.equals(pass, Admins[i][2])) {
 
                         System.out.println("Login Successfully");
-
-                        for (int j = 0; j < 10; j++) {
-                            saved_login[j] = Admins[i][j];
+                        if (Admins[i][0] != null) {
+                            for (int j = 0; j < 3; j++) {
+                                saved_login[j] = Admins[i][j];
+                            }
                         }
 
-                        saved_login[8] = Integer.toString(i);
+                        saved_login[9] = Integer.toString(i);
 
                         found = true;
                         break;
@@ -247,35 +250,48 @@ public class Main{
             {
                 Showstatistics();
                 Admin();
+                break;
             }
             case 2: {
                 System.out.print("Enter a Full name or ID or Email or Phone: ");
                 scanner.nextLine();
                 String search = scanner.nextLine();
                 find_one_all(search);
+                Admin();
                 break;
             }
             case 3:
             {
                 find_one_all("");
+                Admin();
                 break;
             }
             case 4:
             {
                 updateUser();
+                Admin();
                 break;
             }
             case 5:
             {
                 showTransactionHistory();
+                Admin();
             }
             case 6:
-                block_unblock("1"); break;
-            case 7: block_unblock("2"); break;
-            case 8: viewUserDetails(); break;
+                block_unblock("1");
+                Admin();
+                break;
+            case 7:
+            block_unblock("2");
+            Admin();
+            break;
+            case 8:
+                viewUserDetails();
+                Admin();
+                break;
             case 9:
-                saved_login=new String[10];
-                start();
+                Logout();
+                break;
             default:
                 System.out.println("Invalid number");
                 Admin();
@@ -353,44 +369,56 @@ public class Main{
         }
         return null;
     }
-    public static void updateUser(){
-        System.out.print("Enter a Full name or ID or Email or Phone (For updating a special user): ");
+    public static void updateUser() {
+        System.out.print("Enter a Full name or ID or Email or Phone: ");
         scanner.nextLine();
-        String name=scanner.nextLine();
-        String[] information= find_one_all(name);
-        System.out.println( "1. Change username\n" +
-                "2. Change Email\n" +
-                "3. Change Phone Number\n" + "Choose an option: ");
-        String choose = scanner.next();
-        if (Objects.equals(choose, "1")){
-            scanner.nextLine();
-            System.out.println("Enter the new name: ");
-            String update_name=scanner.nextLine();
-            assert information != null;
-            information[0]=update_name;
-            for (String element : information){
-                System.out.println(element);
-            }
-        }else if (Objects.equals(choose,"2")){
-            scanner.nextLine();
-            System.out.println("Enter the new email: ");
-            String update_email=scanner.nextLine();
-            assert information != null;
-            information[3]=update_email;
-            for (String element : information){
-                System.out.println(element);
+        String name = scanner.nextLine();
+
+        String[] information = find_one_all(name);
+
+        if (information == null) {
+            return;
         }
-    }else if (Objects.equals(choose,"3")){
+
+        System.out.println(
+                "1. Change username\n" +
+                        "2. Change Email\n" +
+                        "3. Change Phone Number\n" +
+                        "Choose an option: "
+        );
+
+        String choose = scanner.next();
+
+        if (Objects.equals(choose, "1")) {
             scanner.nextLine();
-            System.out.println("Enter the new Phone: ");
-            String update_phone=scanner.nextLine();
-            assert information != null;
-            information[1]=update_phone;
-            for (String element : information){
-                System.out.println(element);
-            }
-        }else{
-            System.out.println("Invaild choose");
+            System.out.print("Enter the new name: ");
+            String update_name = scanner.nextLine();
+
+            information[0] = update_name;
+
+        } else if (Objects.equals(choose, "2")) {
+            scanner.nextLine();
+            System.out.print("Enter the new email: ");
+            String update_email = scanner.nextLine();
+
+            information[3] = update_email;
+
+        } else if (Objects.equals(choose, "3")) {
+            scanner.nextLine();
+            System.out.print("Enter the new Phone: ");
+            String update_phone = scanner.nextLine();
+
+            information[1] = update_phone;
+
+        } else {
+            System.out.println("Invalid choice!");
+            return;
+        }
+
+        System.out.println("User updated successfully!");
+
+        for (String element : information) {
+            System.out.println(element);
         }
     }
     public static void showTransactionHistory(){
@@ -412,37 +440,61 @@ public class Main{
             }
         }
     }
-    public static void block_unblock(String status){
-        if (Objects.equals("1", status)){
+    public static void block_unblock(String status) {
+        if (Objects.equals(status, "1")) {
             scanner.nextLine();
-            System.out.print("Enter a Full name or ID or Email or Phone (For blocking user): ");
-            String name=scanner.nextLine();
-            String[] information= find_one_all(name);
-            assert information != null;
-            information[4]="Blocked";
-            for (int i =0 ; i<7;i++){
+            System.out.print("Enter a Full name or ID or Email or Phone: ");
+            String name = scanner.nextLine();
+
+            String[] information = find_one_all(name);
+
+            if (information == null) {
+                return;
+            }
+
+            information[4] = "Blocked";
+
+            System.out.println("User blocked successfully!");
+
+            for (int i = 0; i < 7; i++) {
                 System.out.println(information[i]);
             }
-            System.out.println("u blocked acc suc");
-        }
-        if(Objects.equals(status,"2")){
+
+        } else if (Objects.equals(status, "2")) {
             scanner.nextLine();
-            System.out.print("Enter a Full name or ID or Email or Phone (For blocking user): ");
-            String name=scanner.nextLine();
-            String[] information= find_one_all(name);
-            assert information != null;
-            information[4]="Activ";
-            System.out.println("U ublocked account succfully");
+            System.out.print("Enter a Full name or ID or Email or Phone: ");
+            String name = scanner.nextLine();
+
+            String[] information = find_one_all(name);
+
+            if (information == null) {
+                return;
+            }
+
+            information[4] = "Activ";
+
+            System.out.println("User unblocked successfully!");
+
+        } else {
+            System.out.println("Invalid choice!");
         }
     }
-    public static void viewUserDetails(){
+    public static void viewUserDetails() {
         scanner.nextLine();
-        String name=scanner.nextLine();
-        String[] information= find_one_all(name);
-        assert information != null;
-        System.out.println("account status: "+information[4]);
-        System.out.println("balance: "+information[6]);
+
+        System.out.print("Enter a Full name or ID or Email or Phone: ");
+        String name = scanner.nextLine();
+
+        String[] information = find_one_all(name);
+
+        if (information == null) {
+            return;
+        }
+
+        System.out.println("Account status: " + information[4]);
+        System.out.println("Balance: " + information[6]);
     }
+
     public static void User(){
         System.out.print("========== USER PANEL ==========\n" +
                 "1. Show Balance\n" +
@@ -506,9 +558,8 @@ public class Main{
                 User();
                 break;
             case 8:
+                Logout();
                 break;
-            case 9:
-
             default:
                 System.out.println("Invalid number");
                 Admin();
@@ -560,12 +611,11 @@ public class Main{
 
         System.out.print("Enter amount: ");
 
-        if (!scanner.hasNextInt()) {
+        if (!scanner.hasNextInt()) { // scanner.hasNextint == false
             System.out.println("Invalid amount!");
             scanner.nextLine();
             return;
         }
-
         int amount = scanner.nextInt();
 
         int senderBefore = Integer.parseInt(data_user[senderIndex][4]);
@@ -706,8 +756,7 @@ public class Main{
                 Integer.toString(receiverSuccessful + 1);
 
         System.out.println("Sent successfully!");
-        System.out.println("Your balance before: " + senderBefore);
-        System.out.println("Your balance after: " + senderAfter);
+        System.out.println("Your balance : " + senderAfter);
     }
     public static void showTransactionHistoryForUser() {
 
@@ -733,7 +782,10 @@ public class Main{
             String receiverBefore = Transaction[userIndex][i][5];
             String receiverAfter = Transaction[userIndex][i][6];
 
-            System.out.println("\nTransaction #" + (i + 1));
+            System.out.println("\nTransaction #" + (java.util.UUID.randomUUID()
+                    .toString()
+                    .substring(0, 8)
+                    .toUpperCase()));
             System.out.println("Sender ID: " + sender);
             System.out.println("Receiver ID: " + receiver);
             System.out.println("Amount: " + amount);
